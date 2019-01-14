@@ -22,7 +22,7 @@ $db = $database->getContection();
 
 $user = new User($db);
 
-$data = (object)$_POST;
+$data = json_decode(file_get_contents("php://input"));
 
 $user->email = $data->email;
 $email_exists = $user->emailExists();

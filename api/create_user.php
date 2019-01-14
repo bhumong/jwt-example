@@ -15,7 +15,7 @@ $db = $database->getContection();
 $user = new User($db);
 
 // get posted data
-$data = (object)$_POST;
+$data = json_decode(file_get_contents("php://input"));
  
 // set product property values
 $user->firstname = $data->firstname;
