@@ -21,7 +21,7 @@ $db = $database->getContection();
 
 $user = new User($db);
 
-$data = json_decode(file_get_contents('php://input'));
+$data = (object)$_POST;
 
 $jwt = isset($data) ? $data->jwt : '';
 
