@@ -46,7 +46,6 @@ class User
             return true;
         }
         return false;
-
     }
 
     function emailExists()
@@ -73,6 +72,42 @@ class User
             $this->password = $row['password'];
     
             // return true because email exists in the database
+            return true;
+        }
+        return false;
+    }
+
+    function update()
+    {
+        $password_set = !empty($this->password) ? ", password = :password" : "";
+
+        $query = "UPDATE ". $this->table_name . "
+        SET
+            firstname = :firstname,
+            lastname = :lastname,
+            email = :email
+            {$password_set}
+        WHERE id = :id
+        ";
+
+        $stmt = $this->conn->prepare($query);
+
+        $this->firstname = htmlspecialchars(strip_tags($this->firstname));
+        $this->lastname = htmlspecialchars(strip_tags($this->lastname));
+        $this->email = htmlspecialchars(strip_tags($this->email));
+
+        $stmt->bindParam(':firstname', $this->firstname);
+        $stmt->bindParam(':lastname', $this->lastname);
+        $stmt->bindParam(':email', $this->email);
+        $stmt->bindParam(':id', $this->id);
+
+        if (!empty($this->password)) {
+            $this->password = htmlspecialchars(strip_tags($this->password));
+            $password_hash = password_hash($this->password, PASSWORD_DEFAULT);
+            $stmt->bindParam(':password', $this->password);
+        }
+
+        if ($stmt->execute()) {
             return true;
         }
         return false;
