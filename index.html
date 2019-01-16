@@ -138,6 +138,7 @@ $(document).ready(function(){
                     // if response is a success, tell the user it was a successful sign up & empty the input boxes
                     $('#response').html("<div class='alert alert-success'>Successful Login.</div>");
                     $('#login_form')[0].reset();
+                    showHomePage();
                     setCookie("jwt", result.jwt, 1);
                 },
                 error: function (xhr, resp, text) {
@@ -148,6 +149,11 @@ $(document).ready(function(){
             return false;
         })
     })
+
+    $(document).on('click', '#home', function(){
+        showHomePage();
+        deleteRespone();
+    });
 })
 // function to make form values to json format
 function formToJson(input_arr) {
@@ -166,6 +172,7 @@ function formToJson(input_arr) {
 function deleteRespone() {
     $('#response').empty();
 }
+
 function setCookie(cname, cvalue, exdays) {
     var d = new Date();
     d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
@@ -188,6 +195,40 @@ function getCookie(cname) {
     }
     return "";
 }
-</script>
+
+// show home page
+function showHomePage() {
+
+    // validate jwt to verify access
+    var jwt = getCookie('jwt');
+    $.post("api/validate_token.php", JSON.stringify({ jwt: jwt })).done(function (result) {
+        // if valid, show homepage
+        var html = `
+            <div class="card">
+                <div class="card-header">Welcome to Home!</div>
+                <div class="card-body">
+                    <h5 class="card-title">You are logged in.</h5>
+                    <p class="card-text">You won't be able to access the home and account pages if you are not logged in.</p>
+                </div>
+            </div>
+            `;
+        
+        $('#content').html(html);
+        showLoggedInMenu();
+    }).fail(function(result){
+    showLoginPage();
+        $('#response').html("<div class='alert alert-danger'>Please login to access the home page.</div>");
+    });
+    // show login page on error will be here
+}
+
+// if the user is logged in
+function showLoggedInMenu(){
+    // hide login and sign up from navbar & show logout button
+    $("#login, #sign_up").hide();
+    $("#logout").show();
+}
+ 
+// showUpdateAccountForm() will be here</script>
 </body>
 </html
